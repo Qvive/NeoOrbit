@@ -1,4 +1,4 @@
-// Hämta HTML-element
+
 const ship = document.getElementById('ship');
 const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
@@ -25,9 +25,7 @@ let keys = {
 };
 
 // Lyssnar på nedtryckningar
-document.addEventListener('keydown', e => {
-  if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
-});
+
 
 // Lyssnar på att tangenter släpps
 document.addEventListener('keyup', e => {
@@ -60,8 +58,10 @@ function gameLoop() {
       score++;
       scoreDisplay.textContent = `Poäng: ${score}`;
       hasLeftPlanet = false;
+ 
     }
   } else {
+ 
     hasLeftPlanet = true;
   }
 
@@ -71,3 +71,23 @@ function gameLoop() {
 
 // Starta spelet
 gameLoop();
+
+
+// Centrerar utsikten på skeppet när spelet startar
+window.scrollTo(shipX - window.innerWidth / 2, shipY - window.innerHeight / 2);
+
+// Hindra att piltangenter scrollar sidan och uppdatera tangenter
+
+document.addEventListener('keydown', e => {
+  if (keys.hasOwnProperty(e.key)) {
+    e.preventDefault();
+    keys[e.key] = true;
+  }
+});
+
+document.addEventListener('keyup', e => {
+  if (keys.hasOwnProperty(e.key)) {
+    e.preventDefault();
+    keys[e.key] = false;
+  }
+});
