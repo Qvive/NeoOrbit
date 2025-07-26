@@ -3,6 +3,8 @@ const ship = document.getElementById('ship');
 const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
 
+
+
 // Skeppets position i världen (start)
 let shipX = 990;
 let shipY = 990;
@@ -56,6 +58,7 @@ function gameLoop() {
     if (hasLeftPlanet) {
       // Spelaren har varit borta och återvänt = ge poäng
       score++;
+ 
       scoreDisplay.textContent = `Poäng: ${score}`;
       hasLeftPlanet = false;
  
@@ -78,16 +81,33 @@ window.scrollTo(shipX - window.innerWidth / 2, shipY - window.innerHeight / 2);
 
 // Hindra att piltangenter scrollar sidan och uppdatera tangenter
 
+
 document.addEventListener('keydown', e => {
   if (keys.hasOwnProperty(e.key)) {
     e.preventDefault();
     keys[e.key] = true;
   }
+
 });
+
 
 document.addEventListener('keyup', e => {
   if (keys.hasOwnProperty(e.key)) {
     e.preventDefault();
     keys[e.key] = false;
   }
+});
+// WASD controls map to arrow keys
+document.addEventListener('keydown', e => {
+  if (e.key === 'w') { keys.ArrowUp = true; e.preventDefault(); }
+  if (e.key === 's') { keys.ArrowDown = true; e.preventDefault(); }
+  if (e.key === 'a') { keys.ArrowLeft = true; e.preventDefault(); }
+  if (e.key === 'd') { keys.ArrowRight = true; e.preventDefault(); }
+});
+
+document.addEventListener('keyup', e => {
+  if (e.key === 'w') { keys.ArrowUp = false; e.preventDefault(); }
+  if (e.key === 's') { keys.ArrowDown = false; e.preventDefault(); }
+  if (e.key === 'a') { keys.ArrowLeft = false; e.preventDefault(); }
+  if (e.key === 'd') { keys.ArrowRight = false; e.preventDefault(); }
 });
