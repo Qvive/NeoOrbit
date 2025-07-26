@@ -1,9 +1,11 @@
-
+// Hämta HTML‑element
 const ship = document.getElementById('ship');
 const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
+const gameWorld = document.getElementById('gameWorld');
 
-
+// Dölj sidans scrollbars
+document.body.style.overflow = 'hidden';
 
 // Skeppets position i världen (start)
 let shipX = 990;
@@ -26,25 +28,55 @@ let keys = {
   ArrowRight: false
 };
 
-// Lyssnar på nedtryckningar
+// Lyssnar på nedtryckningar för piltangenter
+document.addEventListener('keydown', e => {
+  if (keys.hasOwnProperty(e.key)) {
+    e.preventDefault();
+    keys[e.key] = true;
+  }
+});
 
-
-// Lyssnar på att tangenter släpps
+// Lyssnar på att tangenter släpps för piltangenter
 document.addEventListener('keyup', e => {
-  if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+  if (keys.hasOwnProperty(e.key)) {
+    e.preventDefault();
+    keys[e.key] = false;
+  }
+});
+
+// WASD‑kontroller – fungerar med både små och stora bokstäver
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'w') { keys.ArrowUp    = true;  e.preventDefault(); }
+  if (k === 's') { keys.ArrowDown  = true;  e.preventDefault(); }
+  if (k === 'a') { keys.ArrowLeft  = true;  e.preventDefault(); }
+  if (k === 'd') { keys.ArrowRight = true;  e.preventDefault(); }
+});
+
+document.addEventListener('keyup', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'w') { keys.ArrowUp    = false; e.preventDefault(); }
+  if (k === 's') { keys.ArrowDown  = false; e.preventDefault(); }
+  if (k === 'a') { keys.ArrowLeft  = false; e.preventDefault(); }
+  if (k === 'd') { keys.ArrowRight = false; e.preventDefault(); }
 });
 
 // Spelloopen – körs 60 gånger per sekund
 function gameLoop() {
   // Flytta skeppet om tangenter är nedtryckta
-  if (keys.ArrowUp) shipY -= speed;
-  if (keys.ArrowDown) shipY += speed;
-  if (keys.ArrowLeft) shipX -= speed;
+  if (keys.ArrowUp)    shipY -= speed;
+  if (keys.ArrowDown)  shipY += speed;
+  if (keys.ArrowLeft)  shipX -= speed;
   if (keys.ArrowRight) shipX += speed;
 
   // Uppdatera skeppets position visuellt
   ship.style.left = shipX + 'px';
-  ship.style.top = shipY + 'px';
+  ship.style.top  = shipY + 'px';
+
+  // Flytta spelvärlden så att skeppet hålls centrerat i fönstret
+  const offsetX = window.innerWidth  / 2 - shipX;
+  const offsetY = window.innerHeight / 2 - shipY;
+  gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 
   // Beräkna avstånd till planetens mitt
   const planetCenterX = 1000;
@@ -58,13 +90,10 @@ function gameLoop() {
     if (hasLeftPlanet) {
       // Spelaren har varit borta och återvänt = ge poäng
       score++;
- 
       scoreDisplay.textContent = `Poäng: ${score}`;
       hasLeftPlanet = false;
- 
     }
   } else {
- 
     hasLeftPlanet = true;
   }
 
@@ -74,42 +103,3 @@ function gameLoop() {
 
 // Starta spelet
 gameLoop();
-
-
-// Centrerar utsikten på skeppet när spelet startar
-window.scrollTo(shipX - window.innerWidth / 2, shipY - window.innerHeight / 2);
-
-// Hindra att piltangenter scrollar sidan och uppdatera tangenter
-
-
-document.addEventListener('keydown', e => {
-  if (keys.hasOwnProperty(e.key)) {
-    e.preventDefault();
-    keys[e.key] = true;
-  }
-
-});
-
-
-document.addEventListener('keyup', e => {
-  if (keys.hasOwnProperty(e.key)) {
-    e.preventDefault();
-    keys[e.key] = false;
-  }
-});
-// WASD controls map to arrow keys
-document.addEventListener('keydown', e => {
-  const k = e.key.toLowerCase();
-  if (k === 'w') { keys.ArrowUp = true; e.preventDefault(); }
-  if (k === 's') { keys.ArrowDown = true; e.preventDefault(); }
-  if (k === 'a') { keys.ArrowLeft = true; e.preventDefault(); }
-  if (k === 'd') { keys.ArrowRight = true; e.preventDefault(); }
-});
-
-document.addEventListener('keyup', e => {
-  const k = e.key.toLowerCase();
-  if (k === 'w') { keys.ArrowUp = false; e.preventDefault(); }
-  if (k === 's') { keys.ArrowDown = false; e.preventDefault(); }
-  if (k === 'a') { keys.ArrowLeft = false; e.preventDefault(); }
-  if (k === 'd') { keys.ArrowRight = false; e.preventDefault(); }
-});
