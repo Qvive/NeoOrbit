@@ -1,0 +1,50 @@
+/* Grundstil för sidan */
+body {
+  margin: 0;
+  font-family: sans-serif;
+  background-color: #000;
+  color: white;
+  text-align: center;
+}
+
+/* Rubrik och poäng */
+h1 {
+  margin: 10px;
+}
+#scoreboard {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+/* Spelvärlden – större än skärmen */
+#gameWorld {
+  position: relative;
+  width: 2000px;
+  height: 2000px;
+  margin: 0 auto;
+  border: 2px solid white;
+  background: radial-gradient(ellipse at center, #111 0%, #000 100%);
+  overflow: hidden;
+}
+
+/* Planeten (basen) – en stor ring i mitten */
+#planet {
+  width: 200px;
+  height: 200px;
+  border: 10px solid white;
+  border-radius: 50%;
+  position: absolute;
+  left: 900px;
+  top: 900px;
+}
+
+/* Skeppet – en liten färgad prick */
+#ship {
+  width: 20px;
+  height: 20px;
+  background: cyan;
+  border-radius: 50%;
+  position: absolute;
+  left: 990px;
+  top: 990px;
+}
