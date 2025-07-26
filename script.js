@@ -8,8 +8,11 @@ const gameWorld = document.getElementById('gameWorld');
 document.body.style.overflow = 'hidden';
 
 // Skeppets position i världen (start)
+// Starta skeppet på toppen av planeten: planetens mitt är (1000,1000)
+// Planeten har radien 100 px och skeppet är 20 px, så skeppets topp‑vänstra hörn
+// ska vara (1000 - 10, 1000 - 100 - 10) = (990, 890)
 let shipX = 990;
-let shipY = 990;
+let shipY = 890;
 
 // Hastighet i px per tangenttryckning
 const speed = 5;
