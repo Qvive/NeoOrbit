@@ -72,6 +72,25 @@ function gameLoop() {
   if (keys.ArrowLeft)  shipX -= speed;
   if (keys.ArrowRight) shipX += speed;
 
+    // Kollisionskontroll: hindra skeppet från att åka in i planeten
+  const shipCenterX = shipX + 10;
+  const shipCenterY = shipY + 10;
+  const planetCenterX = 1000;
+  const planetCenterY = 1000;
+  const dxCenter = shipCenterX - planetCenterX;
+  const dyCenter = shipCenterY - planetCenterY;
+  const distCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
+  const planetRadius = 100;
+  if (distCenter < planetRadius) {
+    if (distCenter > 0) {
+      const angle = Math.atan2(dyCenter, dxCenter);
+      const newCenterX = planetCenterX + Math.cos(angle) * planetRadius;
+      const newCenterY = planetCenterY + Math.sin(angle) * planetRadius;
+      shipX = newCenterX - 10;
+      shipY = newCenterY - 10;
+    }
+  }
+
   // Uppdatera skeppets position visuellt
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
