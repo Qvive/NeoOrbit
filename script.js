@@ -99,15 +99,17 @@ document.addEventListener('keyup', e => {
 });
 // WASD controls map to arrow keys
 document.addEventListener('keydown', e => {
-  if (e.key === 'w') { keys.ArrowUp = true; e.preventDefault(); }
-  if (e.key === 's') { keys.ArrowDown = true; e.preventDefault(); }
-  if (e.key === 'a') { keys.ArrowLeft = true; e.preventDefault(); }
-  if (e.key === 'd') { keys.ArrowRight = true; e.preventDefault(); }
+  const k = e.key.toLowerCase();
+  if (k === 'w') { keys.ArrowUp = true; e.preventDefault(); }
+  if (k === 's') { keys.ArrowDown = true; e.preventDefault(); }
+  if (k === 'a') { keys.ArrowLeft = true; e.preventDefault(); }
+  if (k === 'd') { keys.ArrowRight = true; e.preventDefault(); }
 });
 
 document.addEventListener('keyup', e => {
-  if (e.key === 'w') { keys.ArrowUp = false; e.preventDefault(); }
-  if (e.key === 's') { keys.ArrowDown = false; e.preventDefault(); }
-  if (e.key === 'a') { keys.ArrowLeft = false; e.preventDefault(); }
-  if (e.key === 'd') { keys.ArrowRight = false; e.preventDefault(); }
+  const k = e.key.toLowerCase();
+  if (k === 'w') { keys.ArrowUp = false; e.preventDefault(); }
+  if (k === 's') { keys.ArrowDown = false; e.preventDefault(); }
+  if (k === 'a') { keys.ArrowLeft = false; e.preventDefault(); }
+  if (k === 'd') { keys.ArrowRight = false; e.preventDefault(); }
 });
