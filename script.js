@@ -8,9 +8,7 @@ const gameWorld = document.getElementById('gameWorld');
 document.body.style.overflow = 'hidden';
 
 // Skeppets position i världen (start)
-// Starta skeppet på toppen av planeten: planetens mitt är (1000,1000)
-// Planeten har radien 100 px och skeppet är 20 px, så skeppets topp‑vänstra hörn
-// ska vara (1000 - 10, 1000 - 100 - 10) = (990, 890)
+// Planeten har radien 100 px, skeppet är 20 px → skeppets topp‑vänstra hörn: (990, 890)
 let shipX = 990;
 let shipY = 890;
 
@@ -55,7 +53,6 @@ document.addEventListener('keydown', e => {
   if (k === 'a') { keys.ArrowLeft  = true;  e.preventDefault(); }
   if (k === 'd') { keys.ArrowRight = true;  e.preventDefault(); }
 });
-
 document.addEventListener('keyup', e => {
   const k = e.key.toLowerCase();
   if (k === 'w') { keys.ArrowUp    = false; e.preventDefault(); }
@@ -63,6 +60,11 @@ document.addEventListener('keyup', e => {
   if (k === 'a') { keys.ArrowLeft  = false; e.preventDefault(); }
   if (k === 'd') { keys.ArrowRight = false; e.preventDefault(); }
 });
+
+// Konstanter för planetens radie och skeppets radie
+const planetRadius = 100;
+const shipRadius   = 10;
+const dockingRadius = planetRadius + shipRadius; // 110 px
 
 // Spelloopen – körs 60 gånger per sekund
 function gameLoop() {
@@ -72,23 +74,33 @@ function gameLoop() {
   if (keys.ArrowLeft)  shipX -= speed;
   if (keys.ArrowRight) shipX += speed;
 
-    // Kollisionskontroll: hindra skeppet från att åka in i planeten
-  const shipCenterX = shipX + 10;
-  const shipCenterY = shipY + 10;
-  const planetCenterX = 1000;
-  const planetCenterY = 1000;
-  const dxCenter = shipCenterX - planetCenterX;
-  const dyCenter = shipCenterY - planetCenterY;
-  const distCenter = Math.sqrt(dxCenter * dxCenter + dyCenter * dyCenter);
-  const planetRadius = 100;
-  if (distCenter < planetRadius) {
-    if (distCenter > 0) {
-      const angle = Math.atan2(dyCenter, dxCenter);
-      const newCenterX = planetCenterX + Math.cos(angle) * planetRadius;
-      const newCenterY = planetCenterY + Math.sin(angle) * planetRadius;
-      shipX = newCenterX - 10;
-      shipY = newCenterY - 10;
+  // Beräkna skeppets centrum
+  const shipCenterX = shipX + shipRadius;
+  const shipCenterY = shipY + shipRadius;
+
+  // Avstånd till planetens centrum (1000, 1000)
+  const dx = shipCenterX - 1000;
+  const dy = shipCenterY - 1000;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+
+  // Om skeppets centrum är innanför dockingradien: flytta ut skeppet och docka
+  if (dist < dockingRadius) {
+    if (dist > 0) {
+      const angle = Math.atan2(dy, dx);
+      const newCenterX = 1000 + Math.cos(angle) * dockingRadius;
+      const newCenterY = 1000 + Math.sin(angle) * dockingRadius;
+      shipX = newCenterX - shipRadius;
+      shipY = newCenterY - shipRadius;
     }
+    // ge poäng om vi varit ute och nu dockar
+    if (hasLeftPlanet) {
+      score++;
+      scoreDisplay.textContent = `Poäng: ${score}`;
+      hasLeftPlanet = false;
+    }
+  } else {
+    // vi är utanför dockingradien
+    hasLeftPlanet = true;
   }
 
   // Uppdatera skeppets position visuellt
@@ -99,25 +111,6 @@ function gameLoop() {
   const offsetX = window.innerWidth  / 2 - shipX;
   const offsetY = window.innerHeight / 2 - shipY;
   gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
-
-  // Beräkna avstånd till planetens mitt
-  const planetCenterX = 1000;
-  const planetCenterY = 1000;
-  const dx = shipX - planetCenterX;
-  const dy = shipY - planetCenterY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
-
-  // Om skeppet är inne i planetens radie
-  if (distance < 100) {
-    if (hasLeftPlanet) {
-      // Spelaren har varit borta och återvänt = ge poäng
-      score++;
-      scoreDisplay.textContent = `Poäng: ${score}`;
-      hasLeftPlanet = false;
-    }
-  } else {
-    hasLeftPlanet = true;
-  }
 
   // Fortsätt köra loopen
   requestAnimationFrame(gameLoop);
