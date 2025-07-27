@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.004
+   Version: 0.005
    =================================== */
 
 html, body {
@@ -55,6 +55,6 @@ h1 {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 20px solid cyan;
+  border-top: 20px solid cyan;
   transform-origin: bottom center;
 }
