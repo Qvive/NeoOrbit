@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.009
+   Version: 0.010
    =================================== */
 
 html, body {
@@ -48,11 +48,11 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – enkel rektangel med mittpunkt som rotationspunkt */
+/* Skeppet – enkel kvadrat 20×20 px med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 30px;      /* bredd */
-  height: 20px;     /* höjd */
+  width: 20px;      /* bredd = 2 × shipRadius */
+  height: 20px;     /* höjd = 2 × shipRadius */
   background: cyan;
   transform-origin: center center;
 }
@@ -63,20 +63,3 @@ h1 {
   background: gray;
   border-radius: 50%;
 }
-
-
-
-
-
-
-
-
-Fråga ChatGPT
-
-
-
-Verktyg
-
-
-
-ChatGPT kan begå misstag. OpenAI använder inte data från arbetsytan MR STEINSSON för att träna modeller.
