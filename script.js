@@ -1,17 +1,22 @@
+// ===================================
+// NeoOrbit – script.js
+// Version: 0.003 (med kamera)
+// ===================================
+
 // Hämta HTML-element
-const ship = document.getElementById('ship');
+tconst ship = document.getElementById('ship');
 const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
+const gameWorld = document.getElementById('gameWorld');
 
-// Position och riktning
+// Startposition och riktning (uppåt = -90 grader)
 let shipX = 990;
-let shipY = 990;
-let angle = 0;
-let speed = 0;
+let shipY = 890;
+let angle = -Math.PI / 2;
 let velocityX = 0;
 let velocityY = 0;
 
-// Poäng
+// Poängsystem
 let score = 0;
 let hasLeftPlanet = false;
 
@@ -33,18 +38,18 @@ document.addEventListener('keyup', e => {
 
 function gameLoop() {
   // Rotation
-  if (keys.a) angle -= 0.05;
-  if (keys.d) angle += 0.05;
+  if (keys.a) angle -= 0.05; // motsols
+  if (keys.d) angle += 0.05; // medsols
 
-  // Acceleration
+  // Acceleration i nosens riktning
   if (keys.w) {
     velocityX += Math.cos(angle) * 0.2;
     velocityY += Math.sin(angle) * 0.2;
   }
 
-  // Bromsa lätt
-  velocityX *= 0.99;
-  velocityY *= 0.99;
+  // Friktion – trögheten minskas
+  velocityX *= 0.8;
+  velocityY *= 0.8;
 
   // Uppdatera position
   shipX += velocityX;
@@ -55,6 +60,11 @@ function gameLoop() {
   ship.style.top = shipY + 'px';
   ship.style.transform = `rotate(${angle}rad)`;
 
+  // Kameran: centrera skeppet i viewport
+  const offsetX = window.innerWidth  / 2 - shipX;
+  const offsetY = window.innerHeight / 2 - shipY;
+  gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
   // Beräkna avstånd till planetens mitt
   const planetCenterX = 1000;
   const planetCenterY = 1000;
@@ -62,6 +72,7 @@ function gameLoop() {
   const dy = shipY - planetCenterY;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
+  // Poänglogik
   if (distance < 100) {
     if (hasLeftPlanet) {
       score++;
