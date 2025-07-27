@@ -11,12 +11,12 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Grundhastighet per frame
+// Maxhastighet per frame
 const baseSpeed = 5;
 // Aktuell hastighet
 let currentSpeed = 0;
-// Inbromsnings­räknare (frames)
-let decelFrames = 0;
+// Räknare för acceleration/inbromsning (antal frames)
+let accelFrames = 0;
 
 // Vinkel i grader för nosrotation
 let angle = 0;
@@ -28,17 +28,14 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// W/S togglar gas/brake
+// W/S startar acceleration eller inbromsning
 document.addEventListener('keydown', e => {
   if (e.key === 'w') {
-    // Full gas omedelbart
-    currentSpeed = baseSpeed;
-    decelFrames = 0;    // avbryt eventuell inbromsning
+    accelFrames = 180;      // 3 s * 60 fps för accelerera
     e.preventDefault();
   }
   if (e.key === 's') {
-    // Påbörja inbromsning över 3 sekunder
-    decelFrames = 180;  // 60 fps * 3 s
+    accelFrames = -180;     // 3 s * 60 fps för bromsa
     e.preventDefault();
   }
 });
@@ -53,19 +50,22 @@ document.addEventListener('keyup', e => {
   if (e.key === 'd') { keys.d = false; e.preventDefault(); }
 });
 
-// Planet- och skepps­radier
+// Planet- och skeppsradier
 const planetRadius = 100;
 const shipRadius   = 10;
 const dockingRadius = planetRadius + shipRadius;
 
 // Spelloopen
 function gameLoop() {
-  // Hantera inbromsning om aktiv
-  if (decelFrames > 0) {
-    // Droppa hastigheten linjärt mot 0
-    currentSpeed -= baseSpeed / 180;
-    if (currentSpeed < 0) currentSpeed = 0;
-    decelFrames--;
+  // Hantera acceleration eller inbromsning
+  if (accelFrames > 0) {
+    // accelerera linjärt mot baseSpeed
+    currentSpeed = Math.min(baseSpeed, currentSpeed + baseSpeed / 180);
+    accelFrames--;
+  } else if (accelFrames < 0) {
+    // bromsa linjärt mot 0
+    currentSpeed = Math.max(0, currentSpeed - baseSpeed / 180);
+    accelFrames++;
   }
 
   // Rotation via A/D
@@ -76,7 +76,7 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Räkna ut rörelsevektor i nosens riktning
+  // Beräkna rörelsevektor i nosens riktning
   const rad = angle * Math.PI / 180;
   const dx  = Math.sin(rad) * currentSpeed;
   const dy  = -Math.cos(rad) * currentSpeed;
