@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.002
+   Version: 0.003
    =================================== */
 
 html, body {
@@ -73,8 +73,8 @@ h1 {
   height: 0;
   border-left: 10px solid transparent;
   border-right: 10px solid transparent;
-  border-bottom: 20px solid cyan;
+  border-top: 20px solid cyan; /* pekar uppåt */
   position: absolute;
-  top: -10px;
+  top: 0;    /* justera så att triangeln sticker ut ovanpå kroppen */
   left: 10px;
 }
