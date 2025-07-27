@@ -52,8 +52,31 @@ h1 {
 #ship {
   position: absolute;
   width: 40px;
-  height: 40px;
+  height: 50px; /* höjd ökad för nos + kropp */
   transform-origin: bottom center;
+}
+
+/* Skeppets kropp */
+#ship .body {
+  width: 20px;
+  height: 30px;
+  background: cyan;
+  position: absolute;
+  top: 20px; /* flytta kroppen ned så nosen får plats */
+  left: 10px;
+  border-radius: 4px;
+}
+
+/* Skeppets nos (triangel) */
+#ship .nose {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 20px solid cyan; /* pekar uppåt */
+  position: absolute;
+  top: 0;
+  left: 10px;
 }
 
 /* Skeppets kropp */
