@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.010
+   Version: 0.011
    =================================== */
 
 html, body {
@@ -48,11 +48,11 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – enkel kvadrat 20×20 px med mittpunkt som rotationspunkt */
+/* Skeppet – 40×20 px med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 20px;      /* bredd = 2 × shipRadius */
-  height: 20px;     /* höjd = 2 × shipRadius */
+  width: 40px;      /* bredd = 40px */
+  height: 20px;     /* höjd = 20px */
   background: cyan;
   transform-origin: center center;
 }
