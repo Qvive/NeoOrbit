@@ -4,7 +4,7 @@
 // ===================================
 
 // Hämta HTML-element
-tconst ship = document.getElementById('ship');
+const ship = document.getElementById('ship');
 const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
 const gameWorld = document.getElementById('gameWorld');
@@ -31,25 +31,24 @@ let keys = {
 document.addEventListener('keydown', e => {
   if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
 });
-
 document.addEventListener('keyup', e => {
   if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
 });
 
 function gameLoop() {
-  // Rotation
-  if (keys.a) angle -= 0.05; // motsols
-  if (keys.d) angle += 0.05; // medsols
+  // Rotation medsols/motsols
+  if (keys.a) angle -= 0.05;
+  if (keys.d) angle += 0.05;
 
   // Acceleration i nosens riktning
   if (keys.w) {
-    velocityX += Math.cos(angle) * 0.2;
-    velocityY += Math.sin(angle) * 0.2;
+    velocityX = Math.cos(angle) * 2;
+    velocityY = Math.sin(angle) * 2;
   }
 
   // Friktion – trögheten minskas
-  velocityX *= 0.8;
-  velocityY *= 0.8;
+  velocityX *= 0.9;
+  velocityY *= 0.9;
 
   // Uppdatera position
   shipX += velocityX;
@@ -60,17 +59,15 @@ function gameLoop() {
   ship.style.top = shipY + 'px';
   ship.style.transform = `rotate(${angle}rad)`;
 
-  // Kameran: centrera skeppet i viewport
+  // Kamera: centrera spelet kring skeppet
   const offsetX = window.innerWidth  / 2 - shipX;
   const offsetY = window.innerHeight / 2 - shipY;
   gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
 
   // Beräkna avstånd till planetens mitt
-  const planetCenterX = 1000;
-  const planetCenterY = 1000;
-  const dx = shipX - planetCenterX;
-  const dy = shipY - planetCenterY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  const dx = shipX - 1000;
+  const dy = shipY - 1000;
+  const distance = Math.hypot(dx, dy);
 
   // Poänglogik
   if (distance < 100) {
