@@ -11,8 +11,8 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Maxfart per frame
-const baseSpeed = 5;
+// Maxfart per frame (dubblad)
+const baseSpeed = 10;
 // Aktuell fart
 let currentSpeed = 0;
 // Räknare för acceleration/inbromsning (antal frames)
@@ -28,18 +28,16 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// Tangenter för acceleration/inbromsning
+// Tangenter för acc/decel
 document.addEventListener('keydown', e => {
   if (e.key === 'w') {
-    // Starta acceleration: 
-    // vi vill från currentSpeed → baseSpeed på 180 frames
-    accelFrames = 180;
+    // Starta acceleration: från currentSpeed → baseSpeed på 300 frames (5s)
+    accelFrames = 300;
     e.preventDefault();
   }
   if (e.key === 's') {
-    // Starta inbromsning:
-    // vi vill från currentSpeed → 0 på 180 frames
-    accelFrames = -180;
+    // Starta inbromsning: från currentSpeed → 0 på 300 frames
+    accelFrames = -300;
     e.preventDefault();
   }
 });
@@ -63,12 +61,12 @@ const dockingRadius = planetRadius + shipRadius;
 function gameLoop() {
   // Hantera acc/decel
   if (accelFrames > 0) {
-    // Linjär acceleration: öka med delta varje frame
+    // Linjär acceleration: delta baserat på återstående frames
     const delta = (baseSpeed - currentSpeed) / accelFrames;
     currentSpeed += delta;
     accelFrames--;
   } else if (accelFrames < 0) {
-    // Linjär inbromsning: minska med delta varje frame
+    // Linjär inbromsning
     const delta = currentSpeed / (-accelFrames);
     currentSpeed -= delta;
     accelFrames++;
@@ -82,7 +80,7 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Räkna ut rörelsevektor i nosens riktning
+  // Rörelsevektor i nosens riktning
   const rad = angle * Math.PI / 180;
   const dx  = Math.sin(rad) * currentSpeed;
   const dy  = -Math.cos(rad) * currentSpeed;
@@ -95,7 +93,6 @@ function gameLoop() {
   const cx = shipX + shipRadius;
   const cy = shipY + shipRadius;
   const dist = Math.hypot(cx - 1000, cy - 1000);
-
   if (dist < dockingRadius) {
     if (dist > 0) {
       const angRad = Math.atan2(cy - 1000, cx - 1000);
