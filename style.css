@@ -51,8 +51,8 @@ h1 {
 /* Skeppet – 20×40 px med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 20px;      /* bredd = 20px */
-  height: 40px;     /* höjd = 40px */
+  width: 40px;      /* höjd = 40px */
+  height: 20px;     /* bredd = 20px */
   background: cyan;
   transform-origin: center center;
 }
