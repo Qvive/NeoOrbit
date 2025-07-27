@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.005
+   Version: 0.006
    =================================== */
 
 html, body {
@@ -48,13 +48,11 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – en enkel uppåtriktad triangel */
+/* Skeppet – enkel rektangel */
 #ship {
   position: absolute;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 20px solid cyan;
+  width: 20px;
+  height: 30px;
+  background: cyan;
   transform-origin: bottom center;
 }
