@@ -11,9 +11,9 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Maxhastighet per frame
+// Maxfart per frame
 const baseSpeed = 5;
-// Aktuell hastighet
+// Aktuell fart
 let currentSpeed = 0;
 // Räknare för acceleration/inbromsning (antal frames)
 let accelFrames = 0;
@@ -28,14 +28,18 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// W/S startar acceleration eller inbromsning
+// Tangenter för acceleration/inbromsning
 document.addEventListener('keydown', e => {
   if (e.key === 'w') {
-    accelFrames = 180;      // 3 s * 60 fps för accelerera
+    // Starta acceleration: 
+    // vi vill från currentSpeed → baseSpeed på 180 frames
+    accelFrames = 180;
     e.preventDefault();
   }
   if (e.key === 's') {
-    accelFrames = -180;     // 3 s * 60 fps för bromsa
+    // Starta inbromsning:
+    // vi vill från currentSpeed → 0 på 180 frames
+    accelFrames = -180;
     e.preventDefault();
   }
 });
@@ -57,18 +61,20 @@ const dockingRadius = planetRadius + shipRadius;
 
 // Spelloopen
 function gameLoop() {
-  // Hantera acceleration eller inbromsning
+  // Hantera acc/decel
   if (accelFrames > 0) {
-    // accelerera linjärt mot baseSpeed
-    currentSpeed = Math.min(baseSpeed, currentSpeed + baseSpeed / 180);
+    // Linjär acceleration: öka med delta varje frame
+    const delta = (baseSpeed - currentSpeed) / accelFrames;
+    currentSpeed += delta;
     accelFrames--;
   } else if (accelFrames < 0) {
-    // bromsa linjärt mot 0
-    currentSpeed = Math.max(0, currentSpeed - baseSpeed / 180);
+    // Linjär inbromsning: minska med delta varje frame
+    const delta = currentSpeed / (-accelFrames);
+    currentSpeed -= delta;
     accelFrames++;
   }
 
-  // Rotation via A/D
+  // Rotation med A/D
   if (keys.d) {
     angle = (angle + 2) % 360;
   } else if (keys.a) {
@@ -76,7 +82,7 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Beräkna rörelsevektor i nosens riktning
+  // Räkna ut rörelsevektor i nosens riktning
   const rad = angle * Math.PI / 180;
   const dx  = Math.sin(rad) * currentSpeed;
   const dy  = -Math.cos(rad) * currentSpeed;
@@ -89,6 +95,7 @@ function gameLoop() {
   const cx = shipX + shipRadius;
   const cy = shipY + shipRadius;
   const dist = Math.hypot(cx - 1000, cy - 1000);
+
   if (dist < dockingRadius) {
     if (dist > 0) {
       const angRad = Math.atan2(cy - 1000, cx - 1000);
