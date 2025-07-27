@@ -11,8 +11,9 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Maxfart per frame
-const baseSpeed = 10;
+// Maxfart per frame (sänkt)
+const baseSpeed = 5;  // tidigare 10
+
 // Aktuell fart
 let currentSpeed = 0;
 // Räknare för acceleration/inbromsning
@@ -22,8 +23,8 @@ let accelFrames = 0;
 let angle = 0;
 
 // Poäng och returflagga
-let score            = 0;
-let hasLeftPlanet    = false;
+let score         = 0;
+let hasLeftPlanet = false;
 
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
@@ -59,7 +60,7 @@ let asteroids = [
   new Asteroid(800, 950, 3),    // Stor
   new Asteroid(1200, 1000, 2),  // Medel
   new Asteroid(1000, 1200, 1),  // Liten
-  new Asteroid(1000, 900, 3)    // Ny: stor asteroid 100px norr om planeten
+  new Asteroid(1000, 900, 3)    // Stor, 100px norr om planetcentr
 ];
 
 // ———————— Fragmenteringsfunktion ————————
@@ -145,7 +146,7 @@ const dockingRadius = planetRadius + shipRadius;
 
 // ———————— Spelloopen ————————
 function gameLoop() {
-  // 1) Acceleration / deceleration
+  // 1) Accelerera eller bromsa
   if (accelFrames > 0) {
     const delta = (baseSpeed - currentSpeed) / accelFrames;
     currentSpeed += delta;
@@ -199,16 +200,16 @@ function gameLoop() {
   }
 
   // 7) Skepp–planet kollision & poäng (oförändrad)
-  const cx   = shipX + shipRadius;
-  const cy   = shipY + shipRadius;
-  const dxp  = cx - 1000;
-  const dyp  = cy - 1000;
-  const distp= Math.hypot(dxp, dyp);
+  const cx    = shipX + shipRadius;
+  const cy    = shipY + shipRadius;
+  const dxp   = cx - 1000;
+  const dyp   = cy - 1000;
+  const distp = Math.hypot(dxp, dyp);
   if (distp < dockingRadius) {
     if (distp > 0) {
       const ang2 = Math.atan2(dyp, dxp);
-      shipX = 1000 + Math.cos(ang2)*dockingRadius - shipRadius;
-      shipY = 1000 + Math.sin(ang2)*dockingRadius - shipRadius;
+      shipX = 1000 + Math.cos(ang2) * dockingRadius - shipRadius;
+      shipY = 1000 + Math.sin(ang2) * dockingRadius - shipRadius;
     }
     if (hasLeftPlanet) {
       hasLeftPlanet = false;
@@ -217,7 +218,7 @@ function gameLoop() {
     hasLeftPlanet = true;
   }
 
-  // 8) Uppdatera skeppets DOM-position
+  // 8) Uppdatera skeppets DOM‑position
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
 
@@ -229,5 +230,5 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Starta loopen
+// Starta spelloopen
 gameLoop();
