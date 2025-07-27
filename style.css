@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.008
+   Version: 0.009
    =================================== */
 
 html, body {
@@ -51,8 +51,32 @@ h1 {
 /* Skeppet – enkel rektangel med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 20px;      /* bredd */
-  height: 30px;     /* höjd */
+  width: 30px;      /* bredd */
+  height: 20px;     /* höjd */
   background: cyan;
   transform-origin: center center;
 }
+
+/* Asteroider – helgrå cirklar */
+.asteroid {
+  position: absolute;
+  background: gray;
+  border-radius: 50%;
+}
+
+
+
+
+
+
+
+
+Fråga ChatGPT
+
+
+
+Verktyg
+
+
+
+ChatGPT kan begå misstag. OpenAI använder inte data från arbetsytan MR STEINSSON för att träna modeller.
