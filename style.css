@@ -51,8 +51,8 @@ h1 {
 /* Skeppet – enkel rektangel med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 30px;      /* bredd */
-  height: 20px;     /* höjd */
+  width: 20px;      /* bredd */
+  height: 30px;     /* höjd */
   background: cyan;
   transform-origin: center center;
 }
