@@ -11,11 +11,11 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Maxfart per frame (dubblad)
-const baseSpeed = 10;
+// Maxfart per frame
+const baseSpeed = 10;  // behåll det du har nu
 // Aktuell fart
 let currentSpeed = 0;
-// Räknare för acceleration/inbromsning (antal frames)
+// Räknare för acceleration/inbromsning
 let accelFrames = 0;
 
 // Vinkel i grader för nosrotation
@@ -28,16 +28,22 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// Tangenter för acc/decel
+// Gravitation­skällor: planet + övriga objekt
+const gravitySources = [
+  { x: 1000, y: 1000, strength: 500 },      // planet
+  // { x: asteroidX, y: asteroidY, strength: 50 },
+  // { x: mineralX,  y: mineralY,  strength: 10 },
+  // Lägg in alla dina asteroider, meteoriter och mineraler här
+];
+
+// W/S för acc/decel
 document.addEventListener('keydown', e => {
   if (e.key === 'w') {
-    // Starta acceleration: från currentSpeed → baseSpeed på 300 frames (5s)
-    accelFrames = 300;
+    accelFrames = 300;    // 5 s @60fps
     e.preventDefault();
   }
   if (e.key === 's') {
-    // Starta inbromsning: från currentSpeed → 0 på 300 frames
-    accelFrames = -300;
+    accelFrames = -300;   // 5 s broms
     e.preventDefault();
   }
 });
@@ -61,18 +67,16 @@ const dockingRadius = planetRadius + shipRadius;
 function gameLoop() {
   // Hantera acc/decel
   if (accelFrames > 0) {
-    // Linjär acceleration: delta baserat på återstående frames
     const delta = (baseSpeed - currentSpeed) / accelFrames;
     currentSpeed += delta;
     accelFrames--;
   } else if (accelFrames < 0) {
-    // Linjär inbromsning
     const delta = currentSpeed / (-accelFrames);
     currentSpeed -= delta;
     accelFrames++;
   }
 
-  // Rotation med A/D
+  // Rotation via A/D
   if (keys.d) {
     angle = (angle + 2) % 360;
   } else if (keys.a) {
@@ -80,14 +84,27 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Rörelsevektor i nosens riktning
-  const rad = angle * Math.PI / 180;
-  const dx  = Math.sin(rad) * currentSpeed;
-  const dy  = -Math.cos(rad) * currentSpeed;
+  // Thrust‑vektor i nosens riktning
+  const rad  = angle * Math.PI / 180;
+  const dx1  = Math.sin(rad) * currentSpeed;
+  const dy1  = -Math.cos(rad) * currentSpeed;
 
-  // Flytta skeppet
-  shipX += dx;
-  shipY += dy;
+  // Gravitation
+  let gravDX = 0, gravDY = 0;
+  for (const src of gravitySources) {
+    const vx = src.x - shipX;
+    const vy = src.y - shipY;
+    const distSq = vx*vx + vy*vy;
+    if (distSq === 0) continue;
+    const force = src.strength / distSq;
+    const invDist = 1 / Math.sqrt(distSq);
+    gravDX += vx * invDist * force;
+    gravDY += vy * invDist * force;
+  }
+
+  // Kombinera och flytta skeppet
+  shipX += dx1 + gravDX;
+  shipY += dy1 + gravDY;
 
   // Kollisionskontroll & poäng
   const cx = shipX + shipRadius;
@@ -108,7 +125,7 @@ function gameLoop() {
     hasLeftPlanet = true;
   }
 
-  // Uppdatera visuellt läge
+  // Uppdatera visuellt
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
 
