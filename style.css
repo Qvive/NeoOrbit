@@ -48,13 +48,15 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – 20×40 px med mittpunkt som rotationspunkt */
+/* Skeppet – 20×40 px med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
-  width: 40px;      /* höjd = 40px */
-  height: 20px;     /* bredd = 20px */
-  background: cyan;
+  width: 20px;
+  height: 40px;
+  background: url('./assets/ship.png') no-repeat center center;
+  background-size: contain;
   transform-origin: center center;
+  /* placeras initialt i script.js */
 }
 
 /* Asteroider – helgrå cirklar */
