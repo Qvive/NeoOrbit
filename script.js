@@ -4,63 +4,73 @@ const planet = document.getElementById('planet');
 const scoreDisplay = document.getElementById('scoreboard');
 const gameWorld = document.getElementById('gameWorld');
 
-// Dölj sidans scrollbars
+// Dölj scrollbars
 document.body.style.overflow = 'hidden';
 
-// Skeppets position i världen (start)
+// Startposition
 let shipX = 990;
 let shipY = 890;
 
-// Hastighet i px per frame
+// Hastighet per frame
 const baseSpeed = 5;
-// Gasläge: false = still, true = full fart
-let isThrusting = false;
+// Thrust-timer (antal frames)
+let thrustTimer = 0;
 
-// Poäng och returflagga
+// Poänglogik
 let score = 0;
 let hasLeftPlanet = false;
 
-// Tangentstatus – A/D för sidled
+// Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// Gas & broms: W slår på, S stänger av
+// Tidsbegränsad thrust: W ger 30 frames (0,5 s @60fps)
 document.addEventListener('keydown', e => {
-  if (e.key === 'w') {
-    isThrusting = true;
+  if (e.key === 'w' && thrustTimer === 0) {
+    thrustTimer = 30;
     e.preventDefault();
   }
   if (e.key === 's') {
-    isThrusting = false;
+    thrustTimer = 0; // akut broms
     e.preventDefault();
   }
 });
 
-// WASD (bara A/D)
+// Styrning A/D + rotation
 document.addEventListener('keydown', e => {
-  const k = e.key.toLowerCase();
-  if (k === 'a') { keys.a = true; e.preventDefault(); }
-  if (k === 'd') { keys.d = true; e.preventDefault(); }
+  if (e.key === 'a') { keys.a = true; e.preventDefault(); }
+  if (e.key === 'd') { keys.d = true; e.preventDefault(); }
 });
 document.addEventListener('keyup', e => {
-  const k = e.key.toLowerCase();
-  if (k === 'a') { keys.a = false; e.preventDefault(); }
-  if (k === 'd') { keys.d = false; e.preventDefault(); }
+  if (e.key === 'a') { keys.a = false; e.preventDefault(); }
+  if (e.key === 'd') { keys.d = false; e.preventDefault(); }
 });
 
-// Konstanter för planetens radie och skeppets radie
+// Radier
 const planetRadius = 100;
 const shipRadius   = 10;
 const dockingRadius = planetRadius + shipRadius;
 
-// Huvudloop – körs 60 ggr/s
+// Huvudloop
 function gameLoop() {
-  // Bestäm fart
-  const speed = isThrusting ? baseSpeed : 0;
+  // Avkasta thrust-timer
+  if (thrustTimer > 0) thrustTimer--;
 
-  // Rörelse
-  if (keys.a) shipX -= speed;
-  if (keys.d) shipX += speed;
-  shipY -= speed; // gas drar alltid uppåt, eller 0 om isThrusting=false
+  // Bestäm fart: 0 om timer=0, annars baseSpeed
+  const speed = thrustTimer > 0 ? baseSpeed : 0;
+
+  // Riktad thrust (uppåt)
+  shipY -= speed;
+
+  // Sidleds­styrning
+  if (keys.a) {
+    shipX -= speed;
+    ship.style.transform = 'rotate(-15deg)';
+  } else if (keys.d) {
+    shipX += speed;
+    ship.style.transform = 'rotate(15deg)';
+  } else {
+    ship.style.transform = 'rotate(0deg)';
+  }
 
   // Kollisionskontroll & poäng
   const cx = shipX + shipRadius;
@@ -70,7 +80,6 @@ function gameLoop() {
   const dist = Math.hypot(dx, dy);
 
   if (dist < dockingRadius) {
-    // putta ut skeppet till ringens kant
     if (dist > 0) {
       const ang = Math.atan2(dy, dx);
       const nx = 1000 + Math.cos(ang) * dockingRadius - shipRadius;
@@ -78,7 +87,6 @@ function gameLoop() {
       shipX = nx;
       shipY = ny;
     }
-    // ge poäng om vi kommit tillbaka
     if (hasLeftPlanet) {
       score++;
       scoreDisplay.textContent = `Poäng: ${score}`;
@@ -88,11 +96,11 @@ function gameLoop() {
     hasLeftPlanet = true;
   }
 
-  // Uppdatera visuellt
+  // Uppdatera position
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
 
-  // Kamera: håll skeppet centrerat
+  // Kamera
   const offsetX = window.innerWidth  / 2 - shipX;
   const offsetY = window.innerHeight / 2 - shipY;
   gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
