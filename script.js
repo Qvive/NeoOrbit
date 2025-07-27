@@ -11,10 +11,12 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Hastighet per frame
+// Grundhastighet per frame
 const baseSpeed = 5;
-// Toggle för thrust
-let isThrusting = false;
+// Aktuell hastighet
+let currentSpeed = 0;
+// Inbromsnings­räknare (frames)
+let decelFrames = 0;
 
 // Vinkel i grader för nosrotation
 let angle = 0;
@@ -26,14 +28,17 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// W/S togglar gas av/på
+// W/S togglar gas/brake
 document.addEventListener('keydown', e => {
   if (e.key === 'w') {
-    isThrusting = true;  // slå på gasen
+    // Full gas omedelbart
+    currentSpeed = baseSpeed;
+    decelFrames = 0;    // avbryt eventuell inbromsning
     e.preventDefault();
   }
   if (e.key === 's') {
-    isThrusting = false; // slå av gasen
+    // Påbörja inbromsning över 3 sekunder
+    decelFrames = 180;  // 60 fps * 3 s
     e.preventDefault();
   }
 });
@@ -48,17 +53,22 @@ document.addEventListener('keyup', e => {
   if (e.key === 'd') { keys.d = false; e.preventDefault(); }
 });
 
-// Planets- och skeppsradier
+// Planet- och skepps­radier
 const planetRadius = 100;
 const shipRadius   = 10;
 const dockingRadius = planetRadius + shipRadius;
 
-// Huvudloop
+// Spelloopen
 function gameLoop() {
-  // Bestäm fart från toggle‑läget
-  const speed = isThrusting ? baseSpeed : 0;
+  // Hantera inbromsning om aktiv
+  if (decelFrames > 0) {
+    // Droppa hastigheten linjärt mot 0
+    currentSpeed -= baseSpeed / 180;
+    if (currentSpeed < 0) currentSpeed = 0;
+    decelFrames--;
+  }
 
-  // Rotation med A/D
+  // Rotation via A/D
   if (keys.d) {
     angle = (angle + 2) % 360;
   } else if (keys.a) {
@@ -66,10 +76,10 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Räkna ut vektor i nosens riktning
+  // Räkna ut rörelsevektor i nosens riktning
   const rad = angle * Math.PI / 180;
-  const dx  = Math.sin(rad) * speed;
-  const dy  = -Math.cos(rad) * speed;
+  const dx  = Math.sin(rad) * currentSpeed;
+  const dy  = -Math.cos(rad) * currentSpeed;
 
   // Flytta skeppet
   shipX += dx;
