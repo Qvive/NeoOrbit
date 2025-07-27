@@ -13,10 +13,10 @@ let shipY = 890;
 
 // Hastighet per frame
 const baseSpeed = 5;
-// Thrust‑timer (antal frames)
-let thrustTimer = 0;
+// Toggle för thrust
+let isThrusting = false;
 
-// Rotationsvinkel (grader)
+// Vinkel i grader för nosrotation
 let angle = 0;
 
 // Poänglogik
@@ -26,14 +26,14 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// W/S för thrust och stopp
+// W/S togglar gas av/på
 document.addEventListener('keydown', e => {
-  if (e.key === 'w' && thrustTimer === 0) {
-    thrustTimer = 30;       // 30 frames = 0.5 s @ 60fps
+  if (e.key === 'w') {
+    isThrusting = true;  // slå på gasen
     e.preventDefault();
   }
   if (e.key === 's') {
-    thrustTimer = 0;        // akut stopp
+    isThrusting = false; // slå av gasen
     e.preventDefault();
   }
 });
@@ -48,20 +48,17 @@ document.addEventListener('keyup', e => {
   if (e.key === 'd') { keys.d = false; e.preventDefault(); }
 });
 
-// Planet- och skeppsradier
+// Planets- och skeppsradier
 const planetRadius = 100;
 const shipRadius   = 10;
 const dockingRadius = planetRadius + shipRadius;
 
-// Spelloopen
+// Huvudloop
 function gameLoop() {
-  // Minska thrust‑timer om aktiv
-  if (thrustTimer > 0) thrustTimer--;
+  // Bestäm fart från toggle‑läget
+  const speed = isThrusting ? baseSpeed : 0;
 
-  // Bestäm fart
-  const speed = thrustTimer > 0 ? baseSpeed : 0;
-
-  // Rotation via A/D
+  // Rotation med A/D
   if (keys.d) {
     angle = (angle + 2) % 360;
   } else if (keys.a) {
@@ -69,12 +66,12 @@ function gameLoop() {
   }
   ship.style.transform = `rotate(${angle}deg)`;
 
-  // Omvandla vinkel till rörelsevektor
+  // Räkna ut vektor i nosens riktning
   const rad = angle * Math.PI / 180;
   const dx  = Math.sin(rad) * speed;
   const dy  = -Math.cos(rad) * speed;
 
-  // Flytta skeppet i nosens riktning
+  // Flytta skeppet
   shipX += dx;
   shipY += dy;
 
@@ -82,14 +79,11 @@ function gameLoop() {
   const cx = shipX + shipRadius;
   const cy = shipY + shipRadius;
   const dist = Math.hypot(cx - 1000, cy - 1000);
-
   if (dist < dockingRadius) {
     if (dist > 0) {
       const angRad = Math.atan2(cy - 1000, cx - 1000);
-      const nx = 1000 + Math.cos(angRad) * dockingRadius - shipRadius;
-      const ny = 1000 + Math.sin(angRad) * dockingRadius - shipRadius;
-      shipX = nx;
-      shipY = ny;
+      shipX = 1000 + Math.cos(angRad) * dockingRadius - shipRadius;
+      shipY = 1000 + Math.sin(angRad) * dockingRadius - shipRadius;
     }
     if (hasLeftPlanet) {
       score++;
@@ -100,11 +94,11 @@ function gameLoop() {
     hasLeftPlanet = true;
   }
 
-  // Uppdatera position visuellt
+  // Uppdatera visuellt läge
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
 
-  // Kamera: centrera skeppet i vy
+  // Kamera – centrera skeppet
   const offsetX = window.innerWidth  / 2 - shipX;
   const offsetY = window.innerHeight / 2 - shipY;
   gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
@@ -112,5 +106,5 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Starta gameLoop
+// Starta loopen
 gameLoop();
