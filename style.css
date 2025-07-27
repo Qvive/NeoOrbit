@@ -1,6 +1,6 @@
 /* ===================================
    NeoOrbit – style.css
-   Version: 0.006
+   Version: 0.007
    =================================== */
 
 html, body {
@@ -48,11 +48,11 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – enkel rektangel */
+/* Skeppet – enkel rektangel med mittpunkt som rotationspunkt */
 #ship {
   position: absolute;
   width: 20px;
   height: 30px;
   background: cyan;
-  transform-origin: bottom center;
+  transform-origin: center center;
 }
