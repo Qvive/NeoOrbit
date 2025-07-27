@@ -1,16 +1,22 @@
-/* Grundstil för sidan */
-body {
+/* ===================================
+   NeoOrbit – style.css
+   Version: 0.002
+   =================================== */
+
+html, body {
   margin: 0;
   font-family: sans-serif;
   background-color: #000;
   color: white;
   text-align: center;
+  overflow: hidden;
+  height: 100%;
 }
 
-/* Rubrik och poäng */
 h1 {
   margin: 10px;
 }
+
 #scoreboard {
   font-size: 20px;
   position: fixed;
@@ -30,7 +36,7 @@ h1 {
   overflow: hidden;
 }
 
-/* Planeten (basen) – ljusgrå cirkel med ljusblå \"atmosfär\" */
+/* Planeten – ljusgrå kropp med blå atmosfär */
 #planet {
   width: 200px;
   height: 200px;
@@ -42,12 +48,12 @@ h1 {
   top: 900px;
 }
 
-/* Skeppet – roterbar wrapper */
+/* Skeppet – wrapper som roterar */
 #ship {
   position: absolute;
   width: 40px;
   height: 40px;
-  transform-origin: center center;
+  transform-origin: bottom center;
 }
 
 /* Skeppets kropp */
@@ -57,7 +63,7 @@ h1 {
   background: cyan;
   position: absolute;
   top: 10px;
-  left: -10px;
+  left: 10px;
   border-radius: 4px;
 }
 
@@ -70,5 +76,5 @@ h1 {
   border-bottom: 20px solid cyan;
   position: absolute;
   top: -10px;
-  left: -10px;
+  left: 10px;
 }
