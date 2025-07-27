@@ -13,12 +13,11 @@ h1 {
 }
 #scoreboard {
   font-size: 20px;
-  /* Placera poängvisningen fixerad längst upp till vänster */
+  margin-bottom: 10px;
   position: fixed;
   top: 10px;
   left: 10px;
-  z-index: 1000;
-  margin-bottom: 0;
+  z-index: 10;
 }
 
 /* Spelvärlden – större än skärmen */
@@ -32,11 +31,12 @@ h1 {
   overflow: hidden;
 }
 
-/* Planeten (basen) – en stor ring i mitten */
+/* Planeten (basen) – ljusgrå cirkel med ljusblå "atmosfär" */
 #planet {
   width: 200px;
   height: 200px;
-  border: 10px solid white;
+  background-color: lightgray;
+  border: 10px solid lightblue; /* atmosfär */
   border-radius: 50%;
   position: absolute;
   left: 900px;
@@ -51,6 +51,5 @@ h1 {
   border-radius: 50%;
   position: absolute;
   left: 990px;
-  /* Starta skeppet på toppen av planeten */
-  top: 890px;
+  top: 990px;
 }
