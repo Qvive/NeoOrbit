@@ -45,9 +45,9 @@ h1 {
 /* Skeppet – roterbar wrapper */
 #ship {
   position: absolute;
-  width: 0px;
-  height: 0px;
-  transform-origin: center;
+  width: 40px;
+  height: 40px;
+  transform-origin: center center;
 }
 
 /* Skeppets kropp */
