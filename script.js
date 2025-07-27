@@ -11,99 +11,74 @@ document.body.style.overflow = 'hidden';
 let shipX = 990;
 let shipY = 890;
 
-// Basfart per steg
+// Hastighet i px per frame
 const baseSpeed = 5;
-// Hastighetsnivå 0–3
-let speedLevel = 0;
+// Gasläge: false = still, true = full fart
+let isThrusting = false;
 
-// Poäng
+// Poäng och returflagga
 let score = 0;
-// Håller koll på om skeppet lämnat planeten
 let hasLeftPlanet = false;
 
-// Tangentstatus – vilka tangenter är nedtryckta?
-let keys = {
-  ArrowUp: false,
-  ArrowDown: false,
-  ArrowLeft: false,
-  ArrowRight: false
-};
+// Tangentstatus – A/D för sidled
+let keys = { a: false, d: false };
 
-// Tangent­tryckningar för hastighetskontroll
+// Gas & broms: W slår på, S stänger av
 document.addEventListener('keydown', e => {
-  if (e.key === 'v' || e.key === 'V') {
-    speedLevel = Math.min(3, speedLevel + 1);
-    console.log('Speed level:', speedLevel);
+  if (e.key === 'w') {
+    isThrusting = true;
     e.preventDefault();
   }
-  if (e.key === 's' || e.key === 'S') {
-    speedLevel = Math.max(0, speedLevel - 1);
-    console.log('Speed level:', speedLevel);
-    e.preventDefault();
-  }
-});
-
-// Lyssna på nedtryckningar för piltangenter
-document.addEventListener('keydown', e => {
-  if (keys.hasOwnProperty(e.key)) {
-    keys[e.key] = true;
-    e.preventDefault();
-  }
-});
-// Lyssna på uppsläpp för piltangenter
-document.addEventListener('keyup', e => {
-  if (keys.hasOwnProperty(e.key)) {
-    keys[e.key] = false;
+  if (e.key === 's') {
+    isThrusting = false;
     e.preventDefault();
   }
 });
 
-// WASD‑kontroller (alternativ till pilarna)
+// WASD (bara A/D)
 document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
-  if (k === 'w') { keys.ArrowUp    = true;  e.preventDefault(); }
-  if (k === 'a') { keys.ArrowLeft  = true;  e.preventDefault(); }
-  if (k === 'd') { keys.ArrowRight = true;  e.preventDefault(); }
-  // 's' fångas av hastighets­kontrollen, så vi avstår här
+  if (k === 'a') { keys.a = true; e.preventDefault(); }
+  if (k === 'd') { keys.d = true; e.preventDefault(); }
 });
 document.addEventListener('keyup', e => {
   const k = e.key.toLowerCase();
-  if (k === 'w') { keys.ArrowUp    = false; e.preventDefault(); }
-  if (k === 'a') { keys.ArrowLeft  = false; e.preventDefault(); }
-  if (k === 'd') { keys.ArrowRight = false; e.preventDefault(); }
+  if (k === 'a') { keys.a = false; e.preventDefault(); }
+  if (k === 'd') { keys.d = false; e.preventDefault(); }
 });
 
 // Konstanter för planetens radie och skeppets radie
 const planetRadius = 100;
 const shipRadius   = 10;
-const dockingRadius = planetRadius + shipRadius; // 110 px
+const dockingRadius = planetRadius + shipRadius;
 
-// Spelloopen – körs 60 gånger per sekund
+// Huvudloop – körs 60 ggr/s
 function gameLoop() {
-  // Beräkna faktisk fart
-  const speed = baseSpeed * speedLevel;
+  // Bestäm fart
+  const speed = isThrusting ? baseSpeed : 0;
 
-  // Flytta skeppet om tangenter är nedtryckta
-  if (keys.ArrowUp)    shipY -= speed;
-  if (keys.ArrowDown)  shipY += speed;
-  if (keys.ArrowLeft)  shipX -= speed;
-  if (keys.ArrowRight) shipX += speed;
+  // Rörelse
+  if (keys.a) shipX -= speed;
+  if (keys.d) shipX += speed;
+  shipY -= speed; // gas drar alltid uppåt, eller 0 om isThrusting=false
 
-  // Kollisionskontroll mot planeten (behåll som tidigare)
-  const shipCenterX = shipX + shipRadius;
-  const shipCenterY = shipY + shipRadius;
-  const dx = shipCenterX - 1000;
-  const dy = shipCenterY - 1000;
-  const dist = Math.sqrt(dx*dx + dy*dy);
+  // Kollisionskontroll & poäng
+  const cx = shipX + shipRadius;
+  const cy = shipY + shipRadius;
+  const dx = cx - 1000;
+  const dy = cy - 1000;
+  const dist = Math.hypot(dx, dy);
 
   if (dist < dockingRadius) {
+    // putta ut skeppet till ringens kant
     if (dist > 0) {
-      const angle = Math.atan2(dy, dx);
-      const newCenterX = 1000 + Math.cos(angle) * dockingRadius;
-      const newCenterY = 1000 + Math.sin(angle) * dockingRadius;
-      shipX = newCenterX - shipRadius;
-      shipY = newCenterY - shipRadius;
+      const ang = Math.atan2(dy, dx);
+      const nx = 1000 + Math.cos(ang) * dockingRadius - shipRadius;
+      const ny = 1000 + Math.sin(ang) * dockingRadius - shipRadius;
+      shipX = nx;
+      shipY = ny;
     }
+    // ge poäng om vi kommit tillbaka
     if (hasLeftPlanet) {
       score++;
       scoreDisplay.textContent = `Poäng: ${score}`;
@@ -113,11 +88,11 @@ function gameLoop() {
     hasLeftPlanet = true;
   }
 
-  // Uppdatera skeppets position visuellt
+  // Uppdatera visuellt
   ship.style.left = shipX + 'px';
   ship.style.top  = shipY + 'px';
 
-  // Flytta spelvärlden så skeppet hålls centrerat
+  // Kamera: håll skeppet centrerat
   const offsetX = window.innerWidth  / 2 - shipX;
   const offsetY = window.innerHeight / 2 - shipY;
   gameWorld.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
@@ -125,5 +100,5 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-// Starta spelet
+// Starta
 gameLoop();
