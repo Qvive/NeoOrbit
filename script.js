@@ -16,6 +16,9 @@ const baseSpeed = 5;
 // Thrust-timer (antal frames)
 let thrustTimer = 0;
 
+// Vinkel i grader för nosrotation
+let angle = 0;
+
 // Poänglogik
 let score = 0;
 let hasLeftPlanet = false;
@@ -23,19 +26,19 @@ let hasLeftPlanet = false;
 // Tangentstatus för A/D
 let keys = { a: false, d: false };
 
-// Tidsbegränsad thrust: W ger 30 frames (0,5 s @60fps)
+// W/S för thrust
 document.addEventListener('keydown', e => {
   if (e.key === 'w' && thrustTimer === 0) {
-    thrustTimer = 30;
+    thrustTimer = 30;       // 0,5 s @ 60fps
     e.preventDefault();
   }
   if (e.key === 's') {
-    thrustTimer = 0; // akut broms
+    thrustTimer = 0;        // stopp
     e.preventDefault();
   }
 });
 
-// Styrning A/D + rotation
+// A/D för rotation
 document.addEventListener('keydown', e => {
   if (e.key === 'a') { keys.a = true; e.preventDefault(); }
   if (e.key === 'd') { keys.d = true; e.preventDefault(); }
@@ -50,40 +53,36 @@ const planetRadius = 100;
 const shipRadius   = 10;
 const dockingRadius = planetRadius + shipRadius;
 
-// Huvudloop
+// Spelloopen
 function gameLoop() {
-  // Avkasta thrust-timer
+  // Thrust-timer
   if (thrustTimer > 0) thrustTimer--;
 
-  // Bestäm fart: 0 om timer=0, annars baseSpeed
+  // Hastighet
   const speed = thrustTimer > 0 ? baseSpeed : 0;
 
-  // Riktad thrust (uppåt)
+  // Rörelse i thrust-riktning (uppåt)
   shipY -= speed;
 
-  // Sidleds­styrning
-  if (keys.a) {
-    shipX -= speed;
-    ship.style.transform = 'rotate(-15deg)';
-  } else if (keys.d) {
-    shipX += speed;
-    ship.style.transform = 'rotate(15deg)';
-  } else {
-    ship.style.transform = 'rotate(0deg)';
+  // Rotation
+  if (keys.d) {
+    angle = (angle + 2) % 360;
+  } else if (keys.a) {
+    angle = (angle - 2 + 360) % 360;
   }
+  ship.style.transform = `rotate(${angle}deg)`;
 
-  // Kollisionskontroll & poäng
+  // Kollisions­kontroll & poäng (oförändrad)
   const cx = shipX + shipRadius;
   const cy = shipY + shipRadius;
   const dx = cx - 1000;
   const dy = cy - 1000;
   const dist = Math.hypot(dx, dy);
-
   if (dist < dockingRadius) {
     if (dist > 0) {
-      const ang = Math.atan2(dy, dx);
-      const nx = 1000 + Math.cos(ang) * dockingRadius - shipRadius;
-      const ny = 1000 + Math.sin(ang) * dockingRadius - shipRadius;
+      const angRad = Math.atan2(dy, dx);
+      const nx = 1000 + Math.cos(angRad) * dockingRadius - shipRadius;
+      const ny = 1000 + Math.sin(angRad) * dockingRadius - shipRadius;
       shipX = nx;
       shipY = ny;
     }
