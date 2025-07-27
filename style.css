@@ -13,7 +13,6 @@ h1 {
 }
 #scoreboard {
   font-size: 20px;
-  margin-bottom: 10px;
   position: fixed;
   top: 10px;
   left: 10px;
@@ -31,25 +30,45 @@ h1 {
   overflow: hidden;
 }
 
-/* Planeten (basen) – ljusgrå cirkel med ljusblå "atmosfär" */
+/* Planeten (basen) – ljusgrå cirkel med ljusblå \"atmosfär\" */
 #planet {
   width: 200px;
   height: 200px;
   background-color: lightgray;
-  border: 10px solid lightblue; /* atmosfär */
+  border: 10px solid lightblue;
   border-radius: 50%;
   position: absolute;
   left: 900px;
   top: 900px;
 }
 
-/* Skeppet – en liten färgad prick */
+/* Skeppet – roterbar wrapper */
 #ship {
-  width: 20px;
-  height: 20px;
-  background: cyan;
-  border-radius: 50%;
   position: absolute;
-  left: 990px;
-  top: 990px;
+  width: 0px;
+  height: 0px;
+  transform-origin: center;
+}
+
+/* Skeppets kropp */
+#ship .body {
+  width: 20px;
+  height: 30px;
+  background: cyan;
+  position: absolute;
+  top: 10px;
+  left: -10px;
+  border-radius: 4px;
+}
+
+/* Skeppets nos (triangel) */
+#ship .nose {
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 20px solid cyan;
+  position: absolute;
+  top: -10px;
+  left: -10px;
 }
